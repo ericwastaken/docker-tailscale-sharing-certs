@@ -1,26 +1,12 @@
-# Tailscale side-car container that shares certs with other services
+# Tailscale Sidecar Container for Sharing Certificates
 
-This repository provides a custom Docker image based on the official Tailscale image. It is designed to serve as a sidecar container, enabling secure Tailscale networking within your Docker Compose stack. This image also includes scripts to manage and regenerate Tailscale certificates periodically.
-
-## Available on Docker Hub
-
-This container is available on Docker Hub at [ericwastakenondocker/tailscale-sharing-certs](https://hub.docker.com/r/ericwastakenondocker/tailscale-sharing-certs).
-
-## Overview
-
-This repository contains a Dockerfile and related scripts to create a custom Docker image that wraps the Tailscale client. The image serves as a sidecar container providing a secure Tailscale network for your services within a Docker Compose stack. It also includes cron jobs to ensure that Tailscale certificates are regularly updated.
+This Docker image is designed to act as a sidecar container, facilitating secure Tailscale networking within your Docker Compose stack. It is based on the official Tailscale image and includes custom scripts to manage and periodically regenerate Tailscale certificates. The goal is to provide seamless integration for services requiring secure network communication over Tailscale.
 
 ## Features
 
 - **Tailscale Integration:** Utilizes the official Tailscale image as the base.
 - **Certificate Generation:** Automatically generates and updates Tailscale certificates.
 - **Cron Jobs:** Manages cron jobs to regularly regenerate certificates weekly (Sunday at 4 AM).
-
-## Getting Started
-
-To build this image, use the included `x_build.sh` script. The script will build the container and tag it with the version number in the `build-manifest.env` file. Edit the manifest file to change the version number and image name as needed. The build script supports a multi-architecture build using the `buildx` feature of Docker.
-
-When you're ready to publish the image to Docker Hub, use the `x_deploy.sh` script. This script will tag "latest" and push the image to the Docker Hub repository specified in the `build-manifest.env` file. The deploy script supports a multi-architecture push using the `buildx` feature of Docker.
 
 ## Scripts baked into the image
 
@@ -104,10 +90,8 @@ The `examples` directory contains examples of how to use the Tailscale sidecar c
 Examples:
 - [Tailscaled Nginx](examples/tailscaled-nginx/README.md)
 
-## Contributing
+## GitHub
 
-Contributions are welcome! Please fork the repository and submit a pull request with your changes. 
+See the GitHub repo for more information including how to fork and build your own version.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+https://github.com/ericwastaken/docker-tailscale-sharing-certs
