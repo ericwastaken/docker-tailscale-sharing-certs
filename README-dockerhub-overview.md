@@ -88,7 +88,7 @@ Notice:
 The `examples` directory contains examples of how to use the Tailscale sidecar container. Please refer to the README file in each example for the particular setup details for each.
 
 Examples:
-- [Tailscaled Nginx](examples/tailscaled-nginx/README.md)
+- [Tailscaled Nginx](https://github.com/ericwastaken/docker-tailscale-sharing-certs/tree/main/examples/tailscaled-nginx)
 
 ## GitHub
 
