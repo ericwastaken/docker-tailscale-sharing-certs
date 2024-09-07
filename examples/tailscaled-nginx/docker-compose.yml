@@ -1,0 +1,55 @@
+services:
+  # This docker compose file requires the following environment variables to be set:
+    # TS_AUTHKEY: The Tailscale Authkey to use for the Tailscale service. Only needed for the first service "up" or if you recreate the service!
+    # TS_HOSTNAME: The hostname to use for the Tailscale service.
+    # TS_HOST_FQDN: The FQDN to use for the Tailscale service.
+
+  # This is the Tailscale service that will host the Tailscale network and share the certificates with other services
+  ts-nginx:
+    image: ericwastakenondocker/tailscale-sharing-certs:latest
+    container_name: ts-$TS_HOSTNAME
+    restart: unless-stopped
+    hostname: $TS_HOSTNAME
+    environment:
+      - TS_AUTHKEY=$TS_AUTHKEY
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_DOMAIN_NAME=$TS_HOST_FQDN
+    volumes:
+      # Persist Tailscale State so that the service can be restarted without losing the network authentication
+      - ts-nginx-state:/var/lib/tailscale
+      # Persist Tailscale Certificates so that other services can use them
+      - ts-nginx-certs:/certs
+      # Networking Juju
+      - /dev/net/tun:/dev/net/tun
+    # More networking Juju
+    cap_add:
+      - net_admin
+      - sys_module
+
+  # This is the service we want to expose on the Tailscale network
+  nginx:
+    image: nginx:latest
+    container_name: ts-$TS_HOSTNAME-nginx
+    restart: unless-stopped
+    # Networking for this service is provided by the Tailscale service above
+    network_mode: service:ts-nginx
+    depends_on:
+      - ts-nginx
+    volumes:
+      # Map in the persisted Tailscale Certificates
+      - ts-nginx-certs:/certs
+      # Map in the nginx configuration template (which has variables that need to be replaced)
+      - ./nginx_conf/nginx-template.conf:/etc/nginx/nginx-template.conf:ro
+    environment:
+      - TS_HOST_FQDN=${TS_HOST_FQDN}
+    # Change the entrypoint to use envsubst to replace the variables in the template for nginx.conf
+    # This makes it easier to subst in the certificate names from Tailscale
+    entrypoint: [
+      "sh", "-c",
+      "envsubst < /etc/nginx/nginx-template.conf > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+    ]
+
+# Persist the Tailscale State and Certificates
+volumes:
+  ts-nginx-state:
+  ts-nginx-certs:
